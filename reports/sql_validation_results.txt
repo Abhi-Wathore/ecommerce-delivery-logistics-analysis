@@ -1,0 +1,64 @@
+SQL VALIDATION RESULTS
+Project: E-commerce Delivery and Logistics Performance Analysis
+Role: Data Cleaning and SQL
+
+1. TABLE ROW COUNTS
+Customers: 99,441
+Orders: 99,441
+Order Items: 112,650
+Sellers: 3,095
+
+2. CUSTOMER-ORDER RELATIONSHIP
+Orders matched with customers: 99,441
+Orders with unmatched customer IDs: 0
+Result: All orders have matching customer records.
+
+3. ORDER ITEMS-ORDERS RELATIONSHIP
+Order items matched with orders: 112,650
+Order items with unmatched order IDs: 0
+Result: All order items have matching order records.
+
+4. ORDER ITEMS-SELLERS RELATIONSHIP
+Order items matched with sellers: 112,650
+Order items with unmatched seller IDs: 0
+Result: All order items have matching seller records.
+
+5. DUPLICATE IDENTIFIER CHECKS
+Duplicate order IDs in orders table: 0
+Duplicate customer IDs in customers table: 0
+Duplicate seller IDs in sellers table: 0
+Result: No duplicate primary identifiers were found.
+
+6. MISSING DELIVERY DATES BY ORDER STATUS
+Shipped: 1,107
+Canceled: 619
+Unavailable: 609
+Invoiced: 314
+Processing: 301
+Delivered: 8
+Created: 5
+Approved: 2
+
+Total orders missing customer delivery dates: 2,965.
+
+Note: Missing dates were preserved rather than filled with invented values.
+Orders with statuses such as shipped, canceled, and processing may legitimately
+lack delivery dates. However, the 8 delivered orders missing customer delivery
+dates require further investigation.
+
+7. DELIVERED ORDERS WITH MISSING DELIVERY DATES
+Delivered orders missing customer delivery dates: 8
+Result: These records should be investigated before making any corrections.
+
+8. LATE DELIVERIES
+Delivered orders received after their estimated delivery dates: 7,827
+Result: These orders can be analyzed further to measure delivery performance.
+
+OVERALL CONCLUSION
+All four tables were loaded into SQLite successfully.
+All expected row counts were verified.
+No unmatched customer, order, or seller relationships were found.
+No duplicate primary identifiers were found in the checked tables.
+Missing delivery dates and late deliveries were identified for further analysis.
+
+The original CSV files were not modified.

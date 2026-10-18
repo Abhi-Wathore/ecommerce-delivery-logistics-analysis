@@ -1,0 +1,92 @@
+DATA QUALITY REPORT
+Project: E-commerce Delivery and Logistics Performance Analysis
+Dataset: Olist Brazilian E-Commerce Public Dataset
+Prepared by: Lavanya
+Role: Data Cleaning and SQL
+
+1. DATASETS INSPECTED
+
+1. olist_customers_dataset.csv
+   Records: 99,441
+   Missing values: 0
+   Duplicate rows: 0
+
+2. olist_order_items_dataset.csv
+   Records: 112,650
+   Missing values: 0
+   Duplicate rows: 0
+
+3. olist_orders_dataset.csv
+   Records: 99,441
+   Missing values: 4,908
+   Duplicate rows: 0
+
+4. olist_sellers_dataset.csv
+   Records: 3,095
+   Missing values: 0
+   Duplicate rows: 0
+
+2. MISSING VALUES IN ORDERS DATASET
+
+order_approved_at: 160 missing values
+order_delivered_carrier_date: 1,783 missing values
+order_delivered_customer_date: 2,965 missing values
+
+3. DATA VALIDATION RESULTS
+
+Customer ID validation:
+All 99,441 orders have matching customer IDs.
+
+Order ID validation:
+All 112,650 order items have matching order IDs.
+
+Seller ID validation:
+All order-item seller IDs match the sellers dataset.
+
+Purchase and estimated delivery dates:
+No orders have a purchase date later than the estimated delivery date.
+
+Purchase and actual delivery dates:
+No orders have a delivery timestamp earlier than the purchase timestamp.
+
+Date format validation:
+No invalid dates were detected in the inspected date columns.
+
+4. DELIVERY PERFORMANCE FINDINGS
+
+Orders delivered after estimated delivery date: 7,827
+
+Orders with missing customer delivery dates: 2,965
+
+Missing delivery dates by order status:
+Shipped: 1,107
+Canceled: 619
+Unavailable: 609
+Invoiced: 314
+Processing: 301
+Delivered: 8
+Created: 5
+Approved: 2
+
+5. ANOMALIES IDENTIFIED
+
+Eight orders are marked as delivered but have missing customer delivery dates.
+
+All eight orders have corresponding order-item records.
+Each has one order item with recorded price and freight charges.
+
+One of these eight orders also has a missing carrier delivery date.
+
+These records require further investigation. Missing dates will not be filled with guessed values, and these orders will not be deleted without justification.
+
+6. CLEANING APPROACH
+
+Original CSV files are preserved unchanged.
+
+Missing values and potential anomalies are documented for investigation.
+
+No records are deleted or missing dates artificially filled during this inspection.
+
+Further cleaning and SQL relationship validation will follow.
+
+END OF REPORT
