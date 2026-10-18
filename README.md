@@ -1,7 +1,7 @@
 # ecommerce-delivery-logistics-analysis
 E-commerce Order and Delivery Performance Analysis
 
-Project Objective
+Project Objective 
 
  The objective of this project is to analyze e-commerce order and delivery data to evaluate operational performance, identify delivery delays, understand order trends, and examine shipping costs.
 
