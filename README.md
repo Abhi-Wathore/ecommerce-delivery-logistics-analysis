@@ -12,6 +12,7 @@ The analysis will focus on key performance indicators (KPIs), including total or
 The final goal is to support data-driven decision-making by identifying potential operational issues and recommending improvements in delivery performance, shipping efficiency, and order management.
 
 Project Scope
+
 --> Validate and prepare the four supplied CSV datasets.
 
 --> Integrate related datasets using appropriate keys.
