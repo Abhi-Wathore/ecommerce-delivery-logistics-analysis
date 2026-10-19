@@ -16,6 +16,7 @@ files = [
     "olist_sellers_dataset.csv",
 ]
 
+# Process each dataset
 for filename in files:
     print(f"\nProcessing: {filename}")
 
@@ -27,14 +28,29 @@ for filename in files:
     df = df.drop_duplicates()
     removed_rows = original_rows - len(df)
 
-    # Convert date columns to datetime
-    for column in df.columns:
-        if column.endswith("_date") or column.endswith("_timestamp"):
-            df[column] = pd.to_datetime(df[column], errors="coerce")
+    # Convert date and timestamp columns to datetime
+    date_columns = [
+        "shipping_limit_date",
+        "order_purchase_timestamp",
+        "order_approved_at",
+        "order_delivered_carrier_date",
+        "order_delivered_customer_date",
+        "order_estimated_delivery_date",
+    ]
+
+    for column in date_columns:
+        if column in df.columns:
+            df[column] = pd.to_datetime(
+                df[column], errors="coerce"
+            )
 
     # Save the cleaned dataset to the interim folder
     output_path = CLEAN_DIR / filename
-    df.to_csv(output_path, index=False, date_format="%Y-%m-%d %H:%M:%S")
+    df.to_csv(
+        output_path,
+        index=False,
+        date_format="%Y-%m-%d %H:%M:%S",
+    )
 
     print(f"Original rows: {original_rows}")
     print(f"Duplicate rows removed: {removed_rows}")
