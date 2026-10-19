@@ -54,7 +54,7 @@ My responsibility in this project is Documentation & Testing.
 
 10 Keep documentation consistent with the code and project deliverables.
 
-### Dataset Description
+### Dataset Description table
 
 | Dataset | Actual Rows | Columns | Purpose |
 |---|---:|---:|---|
@@ -62,6 +62,22 @@ My responsibility in this project is Documentation & Testing.
 | `olist_customers_dataset.csv` | 99,441 | 5 | Customer identifiers, locations, and states |
 | `olist_order_items_dataset.csv` | 112,650 | 7 | Items per order, sellers, item prices, and freight |
 | `olist_sellers_dataset.csv` | 3,095 | 4 | Seller identifiers and locations |
+
+### Dataset descriptions
+
+1 Customers Dataset
+  Contains customer identifiers and customer location information. It helps connect orders to customers and supports location-based analysis.
+  
+2 Orders Dataset
+  Contains order identifiers, customer identifiers, order statuses, purchase timestamps, approval timestamps, delivery timestamps, and estimated delivery dates. This is the primary dataset for delivery-performance analysis.
+  
+3  Order Items Dataset
+  Contains order-item identifiers, product identifiers, seller identifiers, shipping-limit dates, product prices, and freight charges.
+  
+4  Sellers Dataset
+  Contains seller identifiers and seller location information. It supports seller-level and geographic logistics analysis.
+  
+--> The four datasets are related through identifiers such as customer_id, order_id, and seller_id.
 
 ### Dataset Relationships
 Dataset: Brazilian E-Commerce Public Dataset by Olist
@@ -71,18 +87,6 @@ Dataset: Brazilian E-Commerce Public Dataset by Olist
 - **Order Items → Sellers:** Join using `seller_id`.
 
 !!! Important data-grain distinction: an order is not the same as an order item. One order can contain multiple items, so joining the order table directly to order items can increase the number of rows. This can distort order counts or other KPIs unless you use the correct aggregation.
-
-### Dataset descriptions
-
-1 Customers Dataset
-  Contains customer identifiers and customer location information. It helps connect orders to customers and supports location-based analysis.
-2 Orders Dataset
-  Contains order identifiers, customer identifiers, order statuses, purchase timestamps, approval timestamps, delivery timestamps, and estimated delivery dates. This is the primary dataset for delivery-performance analysis.
-3  Order Items Dataset
-  Contains order-item identifiers, product identifiers, seller identifiers, shipping-limit dates, product prices, and freight charges.
-4  Sellers Dataset
-  Contains seller identifiers and seller location information. It supports seller-level and geographic logistics analysis.
---> The four datasets are related through identifiers such as customer_id, order_id, and seller_id.
 
 ### Tools and Technologies
 
