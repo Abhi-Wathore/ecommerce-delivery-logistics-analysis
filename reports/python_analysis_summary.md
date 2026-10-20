@@ -7,7 +7,7 @@ I have completed the initial Python analysis using Pandas, NumPy, Matplotlib, an
 - Cancellation rate: 0.63%
 - Average delivery time: 12.56 days
 - On-time delivery rate: 91.89%
-- Average freight cost per order: R$22.82 BRL
+- Average freight cost per order: 22.82 BRL
 
 I also analyzed monthly order trends, order status distribution, processing time, freight costs, and state-wise delivery performance.
 
