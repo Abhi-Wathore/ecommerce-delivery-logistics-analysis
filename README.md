@@ -290,7 +290,7 @@ A total of 2,965 orders have missing customer-delivery dates.
 - [x] Validate order-item-to-seller relationships.
 - [x] Convert the inspected date columns to datetime.
 - [x] Standardize order-status text.
-- [ ] Calculate average delivery time for records with valid dates.
+- [x] Calculate average delivery time for records with valid dates.
 - [ ] Identify late deliveries.
 - [ ] Identify delivered orders with missing delivery dates.
 - [ ] Preserve original CSV files during the documented inspection.
