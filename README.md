@@ -280,16 +280,16 @@ A total of 2,965 orders have missing customer-delivery dates.
 ### Testing Checklist
  Completed Checks
 
-- [ ] Confirm the four datasets load successfully.
-- [ ] Verify the expected row and column counts.
-- [ ] Check for missing values.
-- [ ] Check for duplicate rows.
-- [ ] Check duplicate order, customer, and seller identifiers.
-- [ ] Validate order-to-customer relationships.
-- [ ] Validate order-item-to-order relationships.
-- [ ] Validate order-item-to-seller relationships.
-- [ ] Convert the inspected date columns to datetime.
-- [ ] Standardize order-status text.
+- [x] Confirm the four datasets load successfully.
+- [x] Verify the expected row and column counts.
+- [x] Check for missing values.
+- [x] Check for duplicate rows.
+- [x] Check duplicate order, customer, and seller identifiers.
+- [x] Validate order-to-customer relationships.
+- [x] Validate order-item-to-order relationships.
+- [x] Validate order-item-to-seller relationships.
+- [x] Convert the inspected date columns to datetime.
+- [x] Standardize order-status text.
 - [ ] Calculate average delivery time for records with valid dates.
 - [ ] Identify late deliveries.
 - [ ] Identify delivered orders with missing delivery dates.
