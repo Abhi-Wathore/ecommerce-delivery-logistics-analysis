@@ -1,5 +1,6 @@
 KPI,Value
 Total unique orders,99441.0
+Total orders with price data, 98666
 Cancelled orders,625.0
 Cancellation rate (%),0.63
 Average delivery duration (days),12.56
