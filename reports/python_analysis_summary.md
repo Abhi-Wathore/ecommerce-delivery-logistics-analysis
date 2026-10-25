@@ -4,6 +4,7 @@ I have completed the initial Python analysis using Pandas, NumPy, Matplotlib, an
 
 **Key findings:**
 - Total orders: 99,441
+- Total orders with price data: 98666
 - Cancellation rate: 0.63%
 - Average delivery time: 12.56 days
 - On-time delivery rate: 91.89%
