@@ -183,4 +183,4 @@ Ecommerce-Delivery-Logistics-Analysis/Python_Analysis/
 └── README.md
 ```
 
-*Note: This is a suggested structure. Place the files in the folders that match your actual repository, and include only the outputs you have exported.*
+
