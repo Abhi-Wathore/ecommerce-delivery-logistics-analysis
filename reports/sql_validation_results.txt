@@ -1,64 +1,114 @@
 SQL VALIDATION RESULTS
-Project: E-commerce Delivery and Logistics Performance Analysis
-Role: Data Cleaning and SQL
+==================================================
 
-1. TABLE ROW COUNTS
-Customers: 99,441
-Orders: 99,441
-Order Items: 112,650
-Sellers: 3,095
+Query 1:
+SELECT 'customers' AS table_name, COUNT(*) AS total_records
+FROM customers
 
-2. CUSTOMER-ORDER RELATIONSHIP
-Orders matched with customers: 99,441
-Orders with unmatched customer IDs: 0
-Result: All orders have matching customer records.
+UNION ALL
 
-3. ORDER ITEMS-ORDERS RELATIONSHIP
-Order items matched with orders: 112,650
-Order items with unmatched order IDs: 0
-Result: All order items have matching order records.
+SELECT 'orders', COUNT(*)
+FROM orders
 
-4. ORDER ITEMS-SELLERS RELATIONSHIP
-Order items matched with sellers: 112,650
-Order items with unmatched seller IDs: 0
-Result: All order items have matching seller records.
+UNION ALL
 
-5. DUPLICATE IDENTIFIER CHECKS
-Duplicate order IDs in orders table: 0
-Duplicate customer IDs in customers table: 0
-Duplicate seller IDs in sellers table: 0
-Result: No duplicate primary identifiers were found.
+SELECT 'order_items', COUNT(*)
+FROM order_items
 
-6. MISSING DELIVERY DATES BY ORDER STATUS
-Shipped: 1,107
-Canceled: 619
-Unavailable: 609
-Invoiced: 314
-Processing: 301
-Delivered: 8
-Created: 5
-Approved: 2
+UNION ALL
 
-Total orders missing customer delivery dates: 2,965.
+SELECT 'sellers', COUNT(*)
+FROM sellers
+Results: [('customers', 99441), ('orders', 99441), ('order_items', 112650), ('sellers', 3095)]
 
-Note: Missing dates were preserved rather than filled with invented values.
-Orders with statuses such as shipped, canceled, and processing may legitimately
-lack delivery dates. However, the 8 delivered orders missing customer delivery
-dates require further investigation.
+Query 2:
+SELECT COUNT(*) AS matched_orders
+FROM orders o
+INNER JOIN customers c
+    ON o.customer_id = c.customer_id
+Results: [(99441,)]
 
-7. DELIVERED ORDERS WITH MISSING DELIVERY DATES
-Delivered orders missing customer delivery dates: 8
-Result: These records should be investigated before making any corrections.
+Query 3:
+SELECT COUNT(*) AS unmatched_orders
+FROM orders o
+LEFT JOIN customers c
+    ON o.customer_id = c.customer_id
+WHERE c.customer_id IS NULL
+Results: [(0,)]
 
-8. LATE DELIVERIES
-Delivered orders received after their estimated delivery dates: 7,827
-Result: These orders can be analyzed further to measure delivery performance.
+Query 4:
+SELECT COUNT(*) AS matched_order_items
+FROM order_items i
+INNER JOIN orders o
+    ON i.order_id = o.order_id
+Results: [(112650,)]
 
-OVERALL CONCLUSION
-All four tables were loaded into SQLite successfully.
-All expected row counts were verified.
-No unmatched customer, order, or seller relationships were found.
-No duplicate primary identifiers were found in the checked tables.
-Missing delivery dates and late deliveries were identified for further analysis.
+Query 5:
+SELECT COUNT(*) AS unmatched_order_items
+FROM order_items i
+LEFT JOIN orders o
+    ON i.order_id = o.order_id
+WHERE o.order_id IS NULL
+Results: [(0,)]
 
-The original CSV files were not modified.
+Query 6:
+SELECT COUNT(*) AS matched_seller_items
+FROM order_items i
+INNER JOIN sellers s
+    ON i.seller_id = s.seller_id
+Results: [(112650,)]
+
+Query 7:
+SELECT COUNT(*) AS unmatched_seller_items
+FROM order_items i
+LEFT JOIN sellers s
+    ON i.seller_id = s.seller_id
+WHERE s.seller_id IS NULL
+Results: [(0,)]
+
+Query 8:
+SELECT order_id, COUNT(*) AS occurrences
+FROM orders
+GROUP BY order_id
+HAVING COUNT(*) > 1
+Results: []
+
+Query 9:
+SELECT customer_id, COUNT(*) AS occurrences
+FROM customers
+GROUP BY customer_id
+HAVING COUNT(*) > 1
+Results: []
+
+Query 10:
+SELECT seller_id, COUNT(*) AS occurrences
+FROM sellers
+GROUP BY seller_id
+HAVING COUNT(*) > 1
+Results: []
+
+Query 11:
+SELECT
+    order_status,
+    COUNT(*) AS missing_delivery_dates
+FROM orders
+WHERE order_delivered_customer_date IS NULL
+GROUP BY order_status
+ORDER BY missing_delivery_dates DESC
+Results: [('shipped', 1107), ('canceled', 619), ('unavailable', 609), ('invoiced', 314), ('processing', 301), ('delivered', 8), ('created', 5), ('approved', 2)]
+
+Query 12:
+SELECT COUNT(*) AS delivered_orders_missing_delivery_date
+FROM orders
+WHERE order_status = 'delivered'
+  AND order_delivered_customer_date IS NULL
+Results: [(8,)]
+
+Query 13:
+SELECT COUNT(*) AS late_delivered_orders
+FROM orders
+WHERE order_delivered_customer_date IS NOT NULL
+  AND order_estimated_delivery_date IS NOT NULL
+  AND order_delivered_customer_date > order_estimated_delivery_date
+Results: [(7827,)]
+
