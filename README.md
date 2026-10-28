@@ -175,17 +175,30 @@ This ensures that the average delivery-time metric is calculated only for orders
 
 ### KPI Definitions and Raw-Data Baselines
 
-| KPI | Professional Definition | Raw-Data Baseline |
-|---|---|---:|
-| Total Orders | Count of distinct `order_id` values in the orders dataset. | 99,441 |
-| Delivered Orders | Count of orders with status `delivered`. | 96,478 |
-| Average Delivery Time | Average time between the purchase timestamp and actual customer delivery timestamp, measured in days. | 12.56 days |
-| On-Time Delivery Rate | Eligible delivered orders delivered on or before the estimated delivery date divided by eligible delivered orders, multiplied by 100. | 91.89% |
-| Late Delivery Rate | Eligible delivered orders delivered after the estimated delivery date divided by eligible delivered orders, multiplied by 100. | 8.11% |
-| Total Freight Cost | Sum of `freight_value` across all order-item records. | 2,251,909.54 |
-| Average Freight per Order | Total freight cost aggregated for each order, averaged across orders with item records. | 22.82 |
-| Monthly Order Trend | Count of distinct orders grouped by the month of the purchase timestamp. | To be calculated |
-| Order-Status Distribution | Count and percentage of distinct orders grouped by `order_status`. | To be calculated |
+| KPI | Result |
+|---|---:|
+| Total unique orders | 99,441 |
+| Orders with item-price records | 98,666 |
+| Canceled orders (all orders) | 625 |
+| Cancellation rate (all orders) | 0.63% |
+| Canceled orders (with item data) | 461 |
+| Cancellation rate (with item data) | 0.47% |
+| Average delivery duration | 12.50 calendar days |
+| Eligible delivered orders for on-time/late analysis | 96,470 |
+| On-time deliveries | 88,644 |
+| Late deliveries | 7,826 |
+| On-time delivery rate | 91.89% |
+| Late delivery rate | 8.11% |
+| Average actual-minus-estimated delivery time | -11.18 days |
+| Average delay among late orders | 9.55 days |
+| Average purchase-to-approval time | 10.42 hours |
+| Average purchase-to-carrier handover time | 77.79 hours |
+| Total freight cost | R$2,251,909.54 |
+| Average freight per order | R$22.82 |
+| Median freight per order | R$17.17 |
+| Total product value | R$13,591,643.70 |
+| Product-only Average Order Value | R$137.75 |
+| Average Order Value including freight | R$160.58 |
 
 ### Data Validation and Testing
 
@@ -252,7 +265,7 @@ The time difference is converted into days.
 | Metric                             | Result     |
 | ---------------------------------- | ----------:|
 | Delivered orders with valid dates | 96,470     |
-| Average delivery time              | 12.56 days |
+| Average delivery time              | 12.50 days |
 
 ### Late-delivery analysis
 
