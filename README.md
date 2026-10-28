@@ -440,7 +440,7 @@ The initial inspection of the Olist datasets established a baseline for data qua
 
 The four inspected tables contain 99,441 customer records, 99,441 order records, 112,650 order-item records, and 3,095 seller records. The recorded SQL checks found no unmatched customer, order, or seller relationships and no duplicate primary identifiers in the checked tables.
 
-The Python notebook calculated an average delivery time of 12.50 days for 96,470 delivered orders with valid purchase and customer-delivery timestamps. The SQL results identified 7,828 late deliveries and eight delivered orders with missing customer-delivery dates.
+The Python notebook calculated an average delivery time of 12.50 days for 96,470 delivered orders with valid purchase and customer-delivery timestamps. The SQL results identified 7,827 late deliveries and eight delivered orders with missing customer-delivery dates.
 
 These findings provide a foundation for further logistics analysis. Additional anomaly investigation, testing, and implementation of the remaining analysis objectives are required before the project can be considered fully complete.
 
