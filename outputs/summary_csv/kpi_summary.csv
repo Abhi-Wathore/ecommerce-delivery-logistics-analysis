@@ -5,7 +5,7 @@ Canceled orders (full dataset),625.0
 "Cancellation rate (full dataset, %)",0.63
 Canceled orders (with item data),461.0
 "Cancellation rate (with item data, %)",0.47
-Average delivery duration (whole calendar days),12.5
+Average delivery duration (whole calendar days),12.50
 Eligible delivered orders,96470.0
 On-time orders,88644.0
 Late orders,7826.0
