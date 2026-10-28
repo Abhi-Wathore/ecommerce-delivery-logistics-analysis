@@ -32,7 +32,7 @@ My responsibility in this project is Documentation & Testing.
 
  The purpose of this role is to make the project understandable, organized, testable, and reliable. I document the workflow, explain the data-cleaning decisions, record testing results, and verify that the outputs are consistent with the project's objectives.
 
-### Responsibilities
+### my Responsibilities
 
 1 Maintain the project README and documentation.
 
@@ -290,6 +290,50 @@ A total of 2,965 orders have missing customer-delivery dates.
 | Approved     |                      2 |
 | **Total**    |              **2,965** |
 
+
+### Power BI Dashboard Validation and Testing
+
+The Power BI dashboard presents key performance indicators (KPIs) and visualizations of e-commerce delivery and logistics performance. The dashboard is validated against the team's Python analysis and SQL validation results.
+
+### Dashboard Components
+
+| Dashboard Component | Validation Purpose |
+|---|---|
+| Total Orders | Verify the order count against the approved dataset. |
+| On-Time Delivery % | Validate the on-time delivery rate against Python results. |
+| Cancellation Rate | Confirm the cancellation rate and its denominator. |
+| Average Delivery Days | Compare the displayed average with the validated delivery-time calculation. |
+| Total Freight | Verify the total freight cost against the Python summary. |
+| Average Order Value | Validate the average order value and its calculation method. |
+| Delayed Orders | Compare the delayed-order count with the approved analysis results. |
+| Monthly Delivery Performance | Check monthly delayed orders and on-time delivery percentages. |
+| State-wise Delivery Performance | Validate on-time delivery rates by customer state. |
+| Freight Cost vs. Revenue | Compare monthly freight costs and revenue with source summaries. |
+| Order Status | Verify the order-status distribution against the selected order population. |
+
+### Dashboard Testing Checklist
+
+- [x] Verify that all dashboard visuals load correctly.
+- [x] Validate the Total Orders card against the approved dataset.
+- [x] Check the On-Time Delivery % calculation.
+- [x] Verify the Cancellation Rate and its denominator.
+- [x] Compare Average Delivery Days with the Python results.
+- [x] Validate Total Freight and Average Order Value.
+- [x] Verify the Delayed Orders count.
+- [x] Compare monthly delivery performance with Python summary tables.
+- [x] Validate state-wise delivery performance.
+- [x] Check freight cost and revenue trends.
+- [x] Verify the order-status distribution.
+- [x] Test the Seller ID filter.
+- [x] Test the State filter.
+- [x] Test the Order Status filter.
+- [x] Test the Year-Month filter.
+- [x] Test the customer-city filter.
+- [x] Confirm that charts respond correctly to filter selections.
+- [x] Check for blank visuals, incorrect labels, or unexpected values.
+- [x] Record discrepancies and verify corrections.
+- [x] Confirm that the final dashboard uses the intended cleaned datasets.
+
 ### Testing Checklist
  Completed Checks
 
@@ -304,9 +348,9 @@ A total of 2,965 orders have missing customer-delivery dates.
 - [x] Convert the inspected date columns to datetime.
 - [x] Standardize order-status text.
 - [x] Calculate average delivery time for records with valid dates.
-- [ ] Identify late deliveries.
-- [ ] Identify delivered orders with missing delivery dates.
-- [ ] Preserve original CSV files during the documented inspection.
+- [x] Identify late deliveries.
+- [x] Identify delivered orders with missing delivery dates.
+- [x] Preserve original CSV files during the documented inspection.
 
 ### Further Checks Recommended
 
@@ -396,11 +440,18 @@ The initial inspection of the Olist datasets established a baseline for data qua
 
 The four inspected tables contain 99,441 customer records, 99,441 order records, 112,650 order-item records, and 3,095 seller records. The recorded SQL checks found no unmatched customer, order, or seller relationships and no duplicate primary identifiers in the checked tables.
 
-The Python notebook calculated an average delivery time of 12.56 days for 96,470 delivered orders with valid purchase and customer-delivery timestamps. The SQL results identified 7,827 late deliveries and eight delivered orders with missing customer-delivery dates.
+The Python notebook calculated an average delivery time of 12.50 days for 96,470 delivered orders with valid purchase and customer-delivery timestamps. The SQL results identified 7,827 late deliveries and eight delivered orders with missing customer-delivery dates.
 
 These findings provide a foundation for further logistics analysis. Additional anomaly investigation, testing, and implementation of the remaining analysis objectives are required before the project can be considered fully complete.
 
-### Contribution:
+### Team Contributions
+
+| Team Role | Responsibilities |
+|---|---|
+| Data Cleaning and SQL | Inspecting datasets, handling data-quality issues, validating relationships, and recording SQL results |
+| Python Analysis | Calculating KPIs, analyzing delivery performance, examining monthly trends, and preparing summary tables and charts |
+| Power BI Dashboard | Presenting delivery KPIs, monthly performance, state-wise results, freight costs, and order-status distribution |
+| Documentation and Testing | Maintaining the README, documenting methodology and findings, validating KPI consistency, testing dashboard filters, and recording issues and limitations |
 
 
 
