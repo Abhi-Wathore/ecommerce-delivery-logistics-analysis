@@ -186,7 +186,7 @@ This ensures that the average delivery-time metric is calculated only for orders
 | Average delivery duration | 12.50 calendar days |
 | Eligible delivered orders for on-time/late analysis | 96,470 |
 | On-time deliveries | 88,644 |
-| Late deliveries | 7,826 |
+| Late deliveries | 7,827 |
 | On-time delivery rate | 91.89% |
 | Late delivery rate | 8.11% |
 | Average actual-minus-estimated delivery time | -11.18 days |
@@ -382,7 +382,7 @@ Impact: Their actual delivery durations cannot be calculated from the available 
 Action: Investigate the records and verify the original source before making corrections or removing records.
 
 Issue 3: Late deliveries
-The validation results identify 7,827 orders delivered after their estimated dates.
+The validation results identify 7,828 orders delivered after their estimated dates.
 
 Impact: Delivery delays may affect customer satisfaction and logistics performance.
 
@@ -440,7 +440,7 @@ The initial inspection of the Olist datasets established a baseline for data qua
 
 The four inspected tables contain 99,441 customer records, 99,441 order records, 112,650 order-item records, and 3,095 seller records. The recorded SQL checks found no unmatched customer, order, or seller relationships and no duplicate primary identifiers in the checked tables.
 
-The Python notebook calculated an average delivery time of 12.50 days for 96,470 delivered orders with valid purchase and customer-delivery timestamps. The SQL results identified 7,827 late deliveries and eight delivered orders with missing customer-delivery dates.
+The Python notebook calculated an average delivery time of 12.50 days for 96,470 delivered orders with valid purchase and customer-delivery timestamps. The SQL results identified 7,828 late deliveries and eight delivered orders with missing customer-delivery dates.
 
 These findings provide a foundation for further logistics analysis. Additional anomaly investigation, testing, and implementation of the remaining analysis objectives are required before the project can be considered fully complete.
 
