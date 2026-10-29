@@ -65,11 +65,16 @@ The following results are documented in the current analysis and should be verif
 | Canceled orders (with item data) | 461 |
 | Cancellation rate (with item data) | 0.47% |
 | Average delivery duration | 12.50 calendar days |
-| Eligible delivered orders for on-time/late analysis | 96,470 |
-| On-time deliveries | 88,644 |
-| Late deliveries | 7,826 |
-| On-time delivery rate | 91.89% |
-| Late delivery rate | 8.11% |
+| Eligible delivered orders for on-time/late analysis (orders_with_items) | 96,470 |
+| On-time deliveries (orders_with_items, full timestamps) | 88,644 |
+| Late deliveries (orders_with_items, full timestamps) | 7,826 |
+| On-time delivery rate (orders_with_items, %) | 91.89% |
+| Late delivery rate (orders_with_items, %) | 8.11% |
+| Eligible orders (full timestamps, full dataset) | 96,476 |
+| On-time orders (full timestamps, full dataset) | 88,649 |
+| Late orders (full timestamps, full dataset) | 7,827 |
+| On-time delivery rate (full timestamps, %) | 91.89 |
+| Late delivery rate (full timestamps, %) |8.11 |
 | Average actual-minus-estimated delivery time | -11.18 days |
 | Average delay among late orders | 9.55 days |
 | Average purchase-to-approval time | 10.42 hours |
@@ -102,7 +107,21 @@ Actual customer-delivery timestamps were compared with estimated delivery timest
 - On-time deliveries were completed on or before the estimated delivery timestamp.
 - Late deliveries occurred after the estimated delivery timestamp.
 
+Two calculations were included in the analysis to support comparison between the Python results and the SQL validation results.
+
+Method 1: Analysis using orders_with_items
+
 Among 96,470 eligible delivered orders, 88,644 were on time and 7,826 were late. This corresponds to an on-time delivery rate of 91.89% and a late-delivery rate of 8.11%.
+
+Method 2: Full-dataset analysis using timestamp comparison
+
+Using the full orders dataset and including all orders with both actual and estimated delivery timestamps, 96,476 orders were evaluated. Of these, 88,649 were on time and 7,827 were late. The on-time delivery rate was 91.89%, while the late-delivery rate was 8.11%.
+
+Comparison and validation
+
+The results differ slightly because the first method uses orders_with_items and the second uses the full orders dataset without filtering by order status. The second method follows the same timestamp conditions as the SQL validation query.
+
+For consistent reporting, the analysis should clearly identify which method is used for the final dashboard KPIs. The dataset, filters, and timestamp comparison rules should be consistent across Python, SQL, and Power BI.
 
 #### 6.4 Delivery Delay and Processing Time
 
@@ -162,12 +181,14 @@ The notebook also generates PNG charts for the analyses listed in the visualizat
 Based on the documented results:
 
 1. The full dataset contains 99,441 unique orders.
-2. The cancellation rate across all orders is 0.63%.
-3. The on-time delivery rate among eligible delivered orders is 91.89%.
-4. Late deliveries account for 8.11% of eligible delivered orders.
-5. The average delivery duration is 12.50 whole calendar days.
-6. Freight costs represent an additional component of the average order value.
-7. Regional analysis provides a basis for comparing logistics performance across customer states.
+2. Total orders with item-price records are 98,666.
+3. The cancellation rate across all orders is 0.63%.
+4. The cancellation rate across all orders (with item data) is 0.47%.
+5. The on-time delivery rate among eligible delivered orders is 91.89%.
+6. Late deliveries account for 8.11% of eligible delivered orders.
+7. The average delivery duration is 12.50 whole calendar days.
+8. Freight costs represent an additional component of the average order value.
+9. Regional analysis provides a basis for comparing logistics performance across customer states.
 
 These observations describe the calculated results and do not independently establish the causes of delivery delays or cancellations.
 
@@ -187,8 +208,6 @@ The Python analysis provides a structured assessment of order status, cancellati
 The documented results indicate that 91.89% of eligible delivered orders were on time, while 8.11% were late. The freight and order-value calculations provide additional insight into the cost of fulfilling orders.
 
 The generated KPI summaries and visualizations can support the team's Power BI dashboard and help identify areas for further investigation.
-
-Before final submission, the notebook, report, CSV summaries, and charts should be rerun and checked against the team's validated dataset to ensure that all published results are consistent.
 
 ---
 
