@@ -160,11 +160,16 @@ The current notebook's documented results are:
 | Canceled orders (with item data) | 461 |
 | Cancellation rate (with item data) | 0.47% |
 | Average delivery duration | 12.50 calendar days |
-| Eligible delivered orders for on-time/late analysis | 96,470 |
-| On-time deliveries | 88,644 |
-| Late deliveries | 7,826 |
-| On-time delivery rate | 91.89% |
-| Late delivery rate | 8.11% |
+| Eligible delivered orders for on-time/late analysis (orders_with_items) | 96,470 |
+| On-time deliveries (orders_with_items, full timestamps) | 88,644 |
+| Late deliveries (orders_with_items, full timestamps) | 7,826 |
+| On-time delivery rate (orders_with_items, %) | 91.89% |
+| Late delivery rate (orders_with_items, %) | 8.11% |
+| Eligible orders (full timestamps, full dataset) | 96,476 |
+| On-time orders (full timestamps, full dataset) | 88,649 |
+| Late orders (full timestamps, full dataset) | 7,827 |
+| On-time delivery rate (full timestamps, %) | 91.89 |
+| Late delivery rate (full timestamps, %) |8.11 |
 | Average actual-minus-estimated delivery time | -11.18 days |
 | Average delay among late orders | 9.55 days |
 | Average purchase-to-carrier handover time | 77.79 hours |
