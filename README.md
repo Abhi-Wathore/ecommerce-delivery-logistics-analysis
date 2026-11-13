@@ -142,6 +142,4 @@ Dashboard.pbix
 
 Data: *Brazilian E-Commerce Public Dataset by Olist* (Kaggle), released under CC BY-NC-SA 4.0.
 
-## Author
 
-_Add your name, LinkedIn and GitHub links here._
