@@ -9,6 +9,16 @@ A single-page Power BI dashboard that analyses sales and delivery performance fo
 
 ---
 
+## Dataset Access
+
+The original Olist e-commerce dataset is stored in Google Drive due to file-size considerations.
+
+**Google Drive Dataset:** [Access Raw Dataset](https://drive.google.com/drive/folders/1412ahQ_Og__4_SDY6jv55iPk0M2rSJhF?usp=drive_link)
+
+The original source files are preserved without modification. Cleaned and processed datasets are maintained separately in the repository.
+
+
+
 ## Dashboard Overview
 
 The page is organised as: KPI cards across the top, delivery-performance visuals in the middle, and time-trend visuals along the bottom. Filters (slicers) sit on the left edge and top-right.
