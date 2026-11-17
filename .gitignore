@@ -218,3 +218,11 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Ignore original and generated datasets
+data/raw/
+data/interim/
+data/processed/
+
+# Ignore generated SQLite database
+data/*.db
