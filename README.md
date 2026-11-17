@@ -1,329 +1,163 @@
-# Olist E-Commerce Sales & Delivery Performance Dashboard
+# E-commerce Delivery & Logistics Performance Analysis
 
-A single-page Power BI dashboard that analyses sales and delivery performance for the **Olist Brazilian E-Commerce** dataset. It tracks order volume, revenue, freight, seller counts and, most importantly, how well orders are delivered against the estimated delivery date.
+A team data analytics project using the **Brazilian E-Commerce Public Dataset by Olist** to examine order activity, delivery performance, logistics-related costs, and data quality.
 
-- **File:** `Dashboard.pbix`
-- **Tool:** Microsoft Power BI Desktop
-- **Page size:** 1920 × 1080 (16:9, fit to page) with a custom background image
-- **Data period:** 27 Sep 2016 – 26 Sep 2018 (order purchase date range in the date slicer)
+## Project at a Glance
 
----
+| Item | Details |
+|---|---|
+| Project | E-commerce Delivery & Logistics Performance Analysis |
+| Dataset | Brazilian E-Commerce Public Dataset by Olist |
+| Tools | Python, Pandas, NumPy, Matplotlib, Seaborn, SQL, SQLite, Power BI |
+| Dashboard file | `Dashboard.pbix` |
+| Python notebook | `Python_analysis.ipynb` |
 
 ## Dataset Access
 
-The original Olist e-commerce dataset is stored in Google Drive due to file-size considerations.
+The original Olist CSV files are stored in Google Drive because of repository file-size considerations.
 
-**Google Drive Dataset:** [Access Raw Dataset](https://drive.google.com/drive/folders/1412ahQ_Og__4_SDY6jv55iPk0M2rSJhF?usp=drive_link)
+**[Access the raw dataset on Google Drive](https://drive.google.com/drive/folders/1412ahQ_Og__4_SDY6jv55iPk0M2rSJhF?usp=drive_link)**
 
-The original source files are preserved without modification. Cleaned and processed datasets are maintained separately in the repository.
+The source files should remain unchanged. Store cleaned intermediate data in `data/interim/` and final analytical outputs in `data/processed/`. Do not publish personal or sensitive customer information in a public repository.
 
+The analysis and dashboard described below use these four source tables:
 
+| Dataset | Approximate rows | Main fields used |
+|---|---:|---|
+| Orders | 99,441 | Order ID, customer ID, status, purchase and delivery timestamps |
+| Order Items | 112,650 | Order ID, item ID, product ID, seller ID, price, freight |
+| Customers | 99,441 | Customer ID, customer city, customer state |
+| Sellers | 3,095 | Seller ID, seller city, seller state |
 
-## Dashboard Overview
+## Project Objectives
 
-The page is organised as: KPI cards across the top, delivery-performance visuals in the middle, and time-trend visuals along the bottom. Filters (slicers) sit on the left edge and top-right.
+- Inspect and document the source datasets and their quality.
+- Examine order-status distribution and cancellations.
+- Measure delivery duration, on-time delivery, and late delivery.
+- Calculate processing-time and freight-cost metrics where the required fields are available.
+- Compare delivery and cancellation patterns across customer states.
+- Provide reproducible analysis outputs that can support a Power BI dashboard.
+- Translate observed patterns into operational questions and recommendations without claiming unsupported causation.
 
-### KPI Cards
-
-| KPI | Measure |
-|---|---|
-| Total Orders | `Total Orders` |
-| Total Freight | `Total Freight` |
-| Delivered Orders | `Delivered Orders` |
-| Average Delivery Days | `Average Delivery Days` |
-| On Time Delivery % | `On Time Delivery %` |
-| Total Sales | `Total Sales` |
-| Total Sellers | `Total Sellers` |
-
-### Charts
-
-| Visual | Type | What it shows |
-|---|---|---|
-| Delivery performance | Pie chart | Total Orders split by Delivery Performance (On Time / Late / Not Delivered) |
-| Sales by price band | Treemap | Total Sales by Price Category |
-| Delay severity | Donut chart | Late Orders by Delivery Delay Category |
-| Delivery rate | Gauge | Delivered Orders against Total Orders, with On Time Deliveries |
-| Orders vs. delivered (monthly) | Line & clustered column combo | Total Orders and Delivered Orders by purchase month |
-| Order growth | Area chart | Total Orders by order-approval year |
-| Monthly revenue | Column chart | Total Sales by purchase month |
-
-### Slicers (Filters)
-
-- **Order status** (top)
-- **Order date** – between-range slider on `order_purchase_timestamp`
-- **Year** – from the order purchase date hierarchy
-- **Seller state** – dropdown
-- **Customer city** – dropdown
-
----
-
-## Data Model
-
-Four source tables loaded from CSV files (Olist public dataset), plus auto-generated date tables.
-
-| Table | Rows (approx.) | Key columns |
-|---|---|---|
-| `olist_orders_dataset` | 99,441 | `order_id`, `customer_id`, `order_status`, purchase / approved / carrier / delivered / estimated dates |
-| `olist_order_items_dataset` | ~112,000 | `order_id`, `order_item_id`, `product_id`, `seller_id`, `price`, `freight_value`, `shipping_limit_date` |
-| `olist_customers_dataset` | 99,441 | `customer_id`, `customer_unique_id`, `customer_city`, `customer_state`, `customer_zip_code_prefix` |
-| `olist_sellers_dataset` | 3,095 | `seller_id`, `seller_city`, `seller_state`, `seller_zip_code_prefix` |
-
-### Relationships
-
-```
-olist_customers_dataset ──(1:1, both directions)── olist_orders_dataset ──(1:M)── olist_order_items_dataset ──(M:1)── olist_sellers_dataset
-        customer_id                                       order_id                          seller_id
-```
-
-| From | To | Cardinality | Cross-filter |
-|---|---|---|---|
-| `olist_orders_dataset[customer_id]` | `olist_customers_dataset[customer_id]` | 1:1 | Both |
-| `olist_order_items_dataset[order_id]` | `olist_orders_dataset[order_id]` | Many-to-one | Single |
-| `olist_order_items_dataset[seller_id]` | `olist_sellers_dataset[seller_id]` | Many-to-one | Single |
-
----
-
-## DAX Measures
-
-All measures are stored in the `olist_customers_dataset` table.
-
-| Measure | Logic |
-|---|---|
-| **Total Orders** | Distinct count of `order_id` |
-| **Delivered Orders** | Distinct orders where `order_status = "delivered"` |
-| **Total Sales** | Sum of item `price` |
-| **Total Freight** | Sum of `freight_value` |
-| **Total Items** | Row count of order items |
-| **Total Sellers** | Distinct count of `seller_id` |
-| **Total Customers** | Distinct count of `customer_unique_id` |
-| **Seller Orders** | Distinct count of `order_id` in the order items table |
-| **Average Delivery Days** | Average of the `Delivery Days` calculated column |
-| **On Time Orders / On Time Deliveries** | Distinct orders where `Delivery Performance = "On Time"` |
-| **Late Orders** | Distinct orders where `Delivery Performance = "Late"` |
-| **On Time Delivery %** | Delivered orders (with delivered and estimated dates present) that arrived on or before the estimated date, divided by all such delivered orders |
-
-## Calculated Columns
-
-| Column | Table | Logic |
-|---|---|---|
-| **Delivery Days** | Orders | Days from purchase to customer delivery (delivered orders only) |
-| **Delivery Performance** | Orders | `Not Delivered`, `On Time` (delivered on or before the estimate) or `Late` |
-| **Delivery Delay Category** | Orders | For late orders only: `1-2 Days`, `3-5 Days`, `6-10 Days`, `Above 10 Days` |
-| **Price Category** | Order Items | `Low` (≤ 50), `Medium` (≤ 150), `High` (≤ 500), `Premium` (> 500) |
-
----
-
-## Getting Started
-
-1. Install [Power BI Desktop](https://powerbi.microsoft.com/desktop/).
-2. Download the Olist dataset from Kaggle: *Brazilian E-Commerce Public Dataset by Olist*. You need these four files:
-   - `olist_orders_dataset.csv`
-   - `olist_order_items_dataset.csv`
-   - `olist_customers_dataset.csv`
-   - `olist_sellers_dataset.csv`
-3. Open `Dashboard.pbix`.
-4. The queries point to a local path (`D:\internship\PROJECTS\Praveen\`). Update it under **Home → Transform data → Data source settings → Change Source**, or edit the `Source` step of each query in Power Query.
-5. Click **Refresh**.
-
----
-
-## Key Questions This Dashboard Answers
-
-- How many orders were placed, and how many were actually delivered?
-- What share of deliveries arrive on time, and how late are the late ones?
-- How long does delivery take on average?
-- How do sales and order volume trend month to month and year to year?
-- Which price bands drive the most revenue?
-- How do results differ by seller state, customer city and order status?
-
----
-
-## Project Structure
-
-```
-Dashboard.pbix
-├── Report        – 1 page ("Dashboard"), 19 visuals, custom background image
-├── Data Model    – 4 data tables + auto date tables, 3 relationships
-├── Measures      – 13 DAX measures
-└── Power Query   – 4 CSV import queries
-```
-
-## Dataset Credit
-
-Data: *Brazilian E-Commerce Public Dataset by Olist* (Kaggle), released under CC BY-NC-SA 4.0.
-
-# E-commerce Delivery & Logistics Performance Analysis
-
-## Project Overview
-
-This project analyzes the Brazilian E-Commerce Public Dataset by Olist to understand order patterns, delivery performance, cancellation rates, order processing time, freight costs, and regional logistics performance.
-
-The analysis is performed using Python and its data analysis and visualization libraries. The resulting KPI summaries, CSV files, and charts can support the team's Power BI dashboard.
-
-**Project Role:** Python Analysis
-
-## Objectives
-
-- Analyze order status distribution and cancellation rates.
-- Calculate average delivery duration using whole calendar days.
-- Compare on-time and late deliveries.
-- Measure delivery delays and order processing times.
-- Analyze monthly order trends.
-- Calculate freight costs and Average Order Value (AOV).
-- Compare cancellation and delivery performance across customer states.
-- Export summary tables and charts for Power BI visualization.
-
-## Tools and Technologies
-
-- **Python** — Data analysis and calculations
-- **Pandas** — Data loading, cleaning, grouping, and aggregation
-- **NumPy** — Numerical calculations and conditional operations
-- **Matplotlib** — Data visualization
-- **Seaborn** — Statistical charts
-- **Jupyter Notebook** — Interactive analysis and documentation
-- **Power BI** — Dashboard development using exported summaries
-
-## Datasets
-
-The notebook uses four CSV files from the Olist Brazilian E-Commerce dataset.
-
-| Dataset | Description | Rows |
-|---|---|---:|
-| Orders | Order status, purchase timestamps, approval, and delivery dates | 99,441 |
-| Order Items | Product prices, freight costs, sellers, and order items | 112,650 |
-| Customers | Customer IDs and customer-state information | 99,441 |
-| Sellers | Seller IDs and seller-state information | 3,095 |
-
-The analysis identifies **99,441 unique orders**, of which **98,666 orders have corresponding item-price records**.
-
-## Project Structure
+## Repository Structure
 
 ```text
-Python_Analysis/
+ecommerce-delivery-logistics-analysis/
+├── data/
+│   ├── raw/
+│   ├── interim/
+│   └── processed/
+├── notebooks/
+├── outputs/
+├── powerbi/
+├── reports/
+│   └── figures/
+├── docs/
+├── sql/
+├── src/
+├── Dashboard.pbix
 ├── Python_analysis.ipynb
 ├── README.md
-├── requirements.txt
-├── reports/
-│   └── python_analysis_summary.md
-├── outputs/
-│   ├── kpi_summary.csv
-│   ├── order_status_summary.csv
-│   ├── monthly_order_trends.csv
-│   ├── regional_cancellation_summary.csv
-│   ├── regional_delivery_summary.csv
-│   └── regional_on_time_summary.csv
-├── graphs/
-    ├── order_status_distribution.png
-    ├── on_time_vs_late_deliveries.png
-    ├── monthly_order_trends.png
-    ├── regional_cancellation_rate.png
-    ├── regional_average_delivery_days.png
-    ├── regional_on_time_delivery_rate.png
-    └── regional_on_time_vs_late.png
-
+└── requirements.txt
 ```
 
-## Analysis Performed
+Keep original source files unchanged. Keep reusable Python scripts under `src/`, SQL queries under `sql/`, notebooks under `notebooks/`, generated charts under `reports/figures/`, and final datasets under `data/processed/`. Update this tree if the actual repository layout differs.
 
-### 1. Data Loading and Quality Checks
+## Data Cleaning and SQL Validation
 
-- Loaded the four CSV datasets using Pandas.
-- Examined dataset dimensions, columns, and data types.
-- Checked missing values and duplicate rows.
-- Converted relevant order timestamps to datetime format.
-- Identified orders with available item-price records.
+The data-cleaning workflow documented by the team includes:
 
-### 2. Order Status Distribution
+- Inspecting dataset dimensions, columns, and data types.
+- Checking duplicate records and missing values.
+- Converting available timestamp fields to datetime.
+- Preserving missing values rather than filling them with invented values.
+- Loading the four source tables into SQLite.
+- Validating key relationships between orders, customers, order items, and sellers.
 
-Analyzed the number and percentage of orders in each status, including delivered, shipped, canceled, and other available statuses.
+### Data-quality summary
 
-The notebook examines both the full order dataset and the subset of orders with item-price records.
+| Dataset | Records | Duplicate rows removed | Missing values remaining |
+|---|---:|---:|---:|
+| Customers | 99,441 | 0 | 0 |
+| Order Items | 112,650 | 0 | 0 |
+| Orders | 99,441 | 0 | 4,908 |
+| Sellers | 3,095 | 0 | 0 |
 
-### 3. Cancellation Analysis
+Missing values in the orders dataset were retained rather than filled with assumed values.
 
-Calculated the total number of canceled orders and the cancellation rate for:
+### Timestamp validation
 
-- All unique orders.
-- Orders with corresponding item-price records.
+| Timestamp column | Missing values |
+|---|---:|
+| Order purchase timestamp | 0 |
+| Order approved at | 160 |
+| Order delivered carrier date | 1,783 |
+| Order delivered customer date | 2,965 |
+| Order estimated delivery date | 0 |
 
-The two rates use different populations and should not be compared without considering their denominators.
+The documented validation did not identify additional invalid timestamps. Missing-value counts remained unchanged.
 
-### 4. Delivery Duration
+### Missing delivery timestamp investigation
 
-Calculated delivery duration as the difference between the purchase date and the customer-delivery date, measured in **whole calendar days**.
+The documented investigation identified eight orders marked as delivered without a customer-delivery timestamp:
 
-Only delivered orders with valid purchase and delivery timestamps and nonnegative durations are included.
+- Seven had a carrier-delivery timestamp.
+- One was missing both carrier and customer-delivery timestamps.
+- All eight had corresponding order-item records.
 
-### 5. On-Time and Late Delivery Analysis
+These records were flagged for investigation; no delivery dates were fabricated.
 
-Compared actual customer-delivery timestamps against estimated delivery timestamps.
+### SQL validation
 
-- **On time:** Actual delivery occurred on or before the estimated delivery date.
-- **Late:** Actual delivery occurred after the estimated delivery date.
+The team documented 13 SQL validation queries covering table row counts, key relationships, duplicate IDs, missing delivery timestamps, and orders delivered after their estimated dates.
 
-The notebook calculates the number of on-time and late orders and their respective percentages.
+| Validation | Documented result |
+|---|---:|
+| Customers | 99,441 |
+| Orders | 99,441 |
+| Order Items | 112,650 |
+| Sellers | 3,095 |
+| Orders without matching customers | 0 |
+| Order items without matching orders | 0 |
+| Order items without matching sellers | 0 |
+| Duplicate order IDs | 0 |
+| Duplicate customer IDs | 0 |
+| Duplicate seller IDs | 0 |
+| Delivered orders missing customer-delivery timestamps | 8 |
+| Orders delivered after estimated delivery date | 7,827 |
 
-### 6. Delivery Delays and Processing Time
+The team documentation states that all 13 SQL queries executed successfully. Keep the detailed query output in `reports/sql_validation_results.txt` if that file is included in the submitted repository.
 
-Calculated:
+## Python Analysis
 
-- Average actual-minus-estimated delivery time.
-- Average delay among late orders.
-- Average purchase-to-carrier handover time.
-- Average purchase-to-approval time.
+The Python notebook documents analysis of:
 
-Negative processing intervals are excluded from the corresponding processing-time averages.
+1. Data loading and quality checks.
+2. Order-status distribution.
+3. Cancellation rates for the full order population and the subset with item-price records.
+4. Delivery duration in whole calendar days.
+5. On-time and late deliveries.
+6. Delivery delay and order-processing intervals.
+7. Monthly order trends.
+8. Freight costs and average order value.
+9. Regional comparisons by customer state.
 
-### 7. Monthly Order Trends
-
-Grouped orders by purchase month and visualized changes in order volume over time.
-
-### 8. Freight Costs and Average Order Value
-
-Calculated order-level product and freight totals to analyze:
-
-- Total freight cost.
-- Average freight cost per order.
-- Median freight cost per order.
-- Total product value.
-- Average product-only order value.
-- Average order value including freight.
-
-These calculations use orders with available item-price and freight data.
-
-### 9. Regional Performance
-
-Merged order information with customer-state data to compare:
-
-- Cancellation rates by customer state.
-- Average delivery duration by customer state.
-- On-time and late delivery rates by customer state.
-
-Regional charts highlight states with high cancellation rates, longer delivery durations, and high on-time delivery rates.
-
-## Key Findings
-
-The current notebook's documented results are:
+### Documented Python results
 
 | KPI | Result |
 |---|---:|
 | Total unique orders | 99,441 |
 | Orders with item-price records | 98,666 |
-| Canceled orders (full dataset) | 625 |
-| Cancellation rate (full dataset) | 0.63% |
-| Canceled orders (with item data) | 461 |
-| Cancellation rate (with item data) | 0.47% |
+| Canceled orders, full dataset | 625 |
+| Cancellation rate, full dataset | 0.63% |
+| Canceled orders, with item data | 461 |
+| Cancellation rate, with item data | 0.47% |
 | Average delivery duration | 12.50 calendar days |
-| Eligible delivered orders for on-time/late analysis (orders_with_items) | 96,470 |
-| On-time deliveries (orders_with_items, full timestamps) | 88,644 |
-| Late deliveries (orders_with_items, full timestamps) | 7,826 |
-| On-time delivery rate (orders_with_items, %) | 91.89% |
-| Late delivery rate (orders_with_items, %) | 8.11% |
-| Eligible orders (full timestamps, full dataset) | 96,476 |
-| On-time orders (full timestamps, full dataset) | 88,649 |
-| Late orders (full timestamps, full dataset) | 7,827 |
-| On-time delivery rate (full timestamps, %) | 91.89 |
-| Late delivery rate (full timestamps, %) |8.11 |
+| Eligible delivered orders with item data and full timestamps | 96,470 |
+| On-time deliveries in that population | 88,644 |
+| Late deliveries in that population | 7,826 |
+| On-time delivery rate in that population | 91.89% |
+| Late delivery rate in that population | 8.11% |
 | Average actual-minus-estimated delivery time | -11.18 days |
 | Average delay among late orders | 9.55 days |
 | Average purchase-to-carrier handover time | 77.79 hours |
@@ -332,61 +166,96 @@ The current notebook's documented results are:
 | Average freight per order | R$22.82 |
 | Median freight per order | R$17.17 |
 | Total product value | R$13,591,643.70 |
-| Product-only Average Order Value | R$137.75 |
-| Average Order Value including freight | R$160.58 |
+| Product-only average order value | R$137.75 |
+| Average order value including freight | R$160.58 |
 
+**Population note:** The full dataset and the subset of orders with item-price records are different populations. KPI denominators must be stated and should not be mixed. The notebook also documents full-dataset on-time and late counts separately.
 
+## Power BI Dashboard
 
-## KPI Definitions and Methodology
+The documented Power BI report is a single-page dashboard built for a 1920 × 1080 (16:9) page.
 
-- **Cancellation rate:** Canceled unique orders divided by total unique orders in the specified population, multiplied by 100.
-- **Delivery duration:** Whole calendar days between purchase and customer delivery. This differs from elapsed-time calculations that retain fractional days.
+### KPI cards
+
+- Total Orders
+- Total Freight
+- Delivered Orders
+- Average Delivery Days
+- On Time Delivery %
+- Total Sales
+- Total Sellers
+
+### Visuals
+
+| Visual | Type | Purpose |
+|---|---|---|
+| Delivery performance | Pie chart | Orders split into on-time, late, and not delivered |
+| Sales by price band | Treemap | Sales by price category |
+| Delay severity | Donut chart | Late orders by delay category |
+| Delivery rate | Gauge | Delivered orders against total orders |
+| Orders vs. delivered by month | Line and clustered column chart | Monthly order and delivery counts |
+| Order growth | Area chart | Order counts by approval year |
+| Monthly revenue | Column chart | Sales by purchase month |
+
+### Filters
+
+- Order status
+- Order purchase date
+- Purchase year
+- Seller state
+- Customer city
+
+### Data model
+
+The dashboard documentation describes four CSV source tables and three relationships:
+
+- Orders to Customers: one-to-one, both-direction filtering.
+- Order Items to Orders: many-to-one, single-direction filtering.
+- Order Items to Sellers: many-to-one, single-direction filtering.
+
+### Dashboard refresh instructions
+
+The dashboard's Power Query sources were documented as using a machine-specific local folder path. Before refreshing on another computer:
+
+1. Open `Dashboard.pbix` in Power BI Desktop.
+2. Go to **Home → Transform data → Data source settings**.
+3. Update the CSV source paths, or edit the `Source` step in Power Query.
+4. Refresh the report.
+5. Verify dashboard totals against the validated analysis outputs.
+
+## KPI Definitions
+
+- **Cancellation rate:** Cancelled unique orders divided by total unique orders in the stated population, multiplied by 100.
+- **Delivery duration:** Whole calendar days between purchase and customer delivery for eligible delivered orders.
 - **On-time delivery rate:** On-time delivered orders divided by delivered orders with both actual and estimated delivery timestamps, multiplied by 100.
 - **Late delivery rate:** Late delivered orders divided by the same eligible delivery population, multiplied by 100.
-- **Average delivery delay:** Mean of actual delivery time minus estimated delivery time, expressed in days. A negative result means delivery occurred earlier than estimated on average.
-- **Average delay among late orders:** Mean delay for orders whose actual delivery timestamp was later than the estimated timestamp.
-- **Average freight per order:** Total order-level freight divided by the number of eligible orders with item and freight data.
-- **Product-only AOV:** Total product value divided by eligible orders with item data.
-- **AOV including freight:** Total product value plus freight divided by the same eligible order population.
+- **Average delivery delay:** Mean of actual delivery time minus estimated delivery time. A negative value indicates delivery earlier than the estimate on average.
+- **Average delay among late orders:** Mean delay for orders delivered after the estimated timestamp.
+- **Product-only AOV:** Product value divided by eligible orders with item data.
+- **AOV including freight:** Product value plus freight divided by the same eligible order population.
 
-## How to Run the Notebook
+## Running the Python Notebook
 
-### Requirements
-
-Install the required libraries:
+Install the documented Python dependencies:
 
 ```bash
-pip install pandas numpy matplotlib seaborn jupyter
+python -m pip install pandas numpy matplotlib seaborn jupyter
 ```
 
-### Steps
+Then:
 
-1. Download or clone the project repository.
-2. Place the four required CSV files in a local folder.
+1. Download or access the four required CSV files.
+2. Place them in a local dataset folder.
 3. Open `Python_analysis.ipynb` in Jupyter Notebook.
-4. Update the `DATA_DIR` variable in the first loading cell to point to your dataset folder.
-5. Run the notebook cells from top to bottom.
-6. Review the generated KPIs, summary tables, and charts.
-7. Verify the results against the team's validated data.
-8. Upload the final notebook and required output files to the project repository.
+4. Update the `DATA_DIR` variable in the data-loading cell to point to the local dataset folder.
+5. Run the notebook from top to bottom.
+6. Review the generated KPI tables and charts.
 
-### Configurable Dataset Path
+The notebook documentation also suggests using an `OLIST_DATA_DIR` environment variable to make the dataset path portable across team members' computers.
 
-Each team member should use the path to their own local dataset folder. For example:
+## Outputs
 
-```python
-from pathlib import Path
-
-DATA_DIR = Path(
-    r"F:\jyoti\Tableau\Qveto\olist_cleaned_data_updated"
-)
-```
-
-For improved portability, the notebook can use an environment variable named `OLIST_DATA_DIR` and retain a default path when the variable is not set. This allows team members to change the dataset location without modifying the analysis logic.
-
-## Output Files
-
-The notebook exports the following CSV summaries:
+The Python analysis documentation lists these summary outputs:
 
 - `kpi_summary.csv`
 - `order_status_summary.csv`
@@ -395,565 +264,29 @@ The notebook exports the following CSV summaries:
 - `regional_delivery_summary.csv`
 - `regional_on_time_summary.csv`
 
-It also generates PNG charts for order status, monthly order trends, on-time versus late deliveries, and regional performance.
-
-These outputs can be used as inputs for the team's Power BI dashboard.
+It also lists PNG charts for order status, monthly trends, on-time versus late deliveries, and regional performance. Include these files in the repository only if they have actually been generated and checked.
 
 ## Limitations
 
-- Missing timestamps reduce the number of records eligible for some delivery calculations.
-- Different KPIs use different order populations; the full order dataset and the subset with item-price records must be distinguished.
-- Whole-calendar-day delivery duration differs from fractional elapsed-day duration.
-- Regional analysis describes performance by customer state, not by individual carrier.
-- The analysis identifies descriptive patterns but does not establish the causes of cancellations or delivery delays.
-- Results depend on the exact version of the cleaned and validated datasets used.
+- Missing timestamps reduce the number of records eligible for delivery calculations.
+- Different KPIs use different populations; denominators must be documented.
+- Whole-calendar-day duration differs from elapsed-time duration.
+- Regional analysis is based on customer state and does not establish individual carrier performance.
+- Descriptive associations do not prove the causes of cancellations or delays.
+- Results depend on the exact dataset version and cleaning process used.
+- The dashboard's local data-source paths must be updated before refresh on another computer.
 
 ## Conclusion
 
-The analysis evaluates order status, cancellations, delivery duration, delivery timeliness, processing time, freight costs, and customer-state performance.
+The project documentation describes analysis of order status, cancellations, delivery duration, delivery timeliness, processing intervals, freight costs, and customer-state patterns. The documented Python results report a 91.89% on-time delivery rate and an 8.11% late-delivery rate for the eligible delivered-order population with item data and complete timestamps.
 
-The documented results show an on-time delivery rate of 91.89% and a late-delivery rate of 8.11% among eligible delivered orders. Freight and order-value metrics provide additional insight into logistics costs.
+These results can support operational review, subject to validation against the final approved dataset and the dashboard.
 
-The exported KPI tables and charts can support an interactive Power BI dashboard and help the team identify areas for further investigation and improvement.
+## Dataset Credit
+
+Data: *Brazilian E-Commerce Public Dataset by Olist* (Kaggle), released under CC BY-NC-SA 4.0.
 
 ---
 
 **Project:** E-commerce Delivery & Logistics Performance Analysis  
-**Role:** Python Analysis  
-**Status:** Validate the final outputs against the team's approved dataset before submission.
-# \# E-commerce Delivery and Logistics Performance Analysis
-
-# 
-
-# \*\*Technologies:\*\* Python, Pandas, SQL, SQLite, Power BI
-
-# 
-
-# \## 1. Project Overview
-
-# 
-
-# This project analyzes the Olist Brazilian E-Commerce Public Dataset to understand e-commerce delivery performance, logistics operations, and data quality.
-
-# 
-
-# Python and Pandas are used for data inspection and cleaning. SQL is used to validate records and relationships between datasets. Power BI can be used to build interactive dashboards and visualize delivery performance.
-
-# 
-
-# \## 2. Project Objectives
-
-# 
-
-# \- Inspect and clean the provided datasets.
-
-# \- Identify missing values and duplicate records.
-
-# \- Convert timestamp columns into consistent datetime formats.
-
-# \- Validate relationships between customers, orders, order items, and sellers.
-
-# \- Identify orders with missing delivery timestamps.
-
-# \- Analyze late deliveries and order-status patterns.
-
-# \- Prepare reliable data for visualization and further analysis.
-
-# 
-
-# \## 3. Technologies Used
-
-# 
-
-# \- \*\*Python:\*\* Data processing and automation.
-
-# \- \*\*Pandas:\*\* Data inspection, cleaning, and timestamp conversion.
-
-# \- \*\*SQLite:\*\* Database storage and SQL validation.
-
-# \- \*\*SQL:\*\* Record-count checks, relationship validation, duplicate checks, and delivery analysis.
-
-# \- \*\*Power BI:\*\* Delivery-performance dashboards and visualizations.
-
-# 
-
-# \## 4. Project Folder Structure
-
-# 
-
-# ```text
-
-# ecommerce-delivery-logistics-analysis/
-
-# │
-
-# ├── data/
-
-# │   ├── raw/                  # Original datasets (not tracked by Git)
-
-# │   ├── interim/              # Cleaned datasets (not tracked by Git)
-
-# │   ├── processed/            # Further-processed datasets
-
-# │   └── ecommerce\_analysis.db # SQLite database (not tracked by Git)
-
-# │
-
-# ├── src/
-
-# │   ├── data\_inspection.py
-
-# │   ├── data\_cleaning.py
-
-# │   ├── load\_sqlite.py
-
-# │   ├── check\_database.py
-
-# │   ├── validate\_timestamps.py
-
-# │   ├── investigate\_missing\_deliveries.py
-
-# │   └── run\_sql\_validation.py
-
-# │
-
-# ├── sql/
-
-# │   └── data\_validation.sql
-
-# │
-
-# ├── reports/
-
-# │   ├── data\_quality\_report.md
-
-# │   ├── sql\_validation\_results.txt
-
-# │   └── delivered\_orders\_missing\_timestamps.csv
-
-# │
-
-# ├── notebooks/
-
-# ├── .gitignore
-
-# └── README.md
-
-# ```
-
-# 
-
-# \## 5. Datasets
-
-# 
-
-# The project uses four CSV files from the Olist Brazilian E-Commerce Public Dataset.
-
-# 
-
-# | Dataset | Number of Records |
-
-# |---|---:|
-
-# | Customers | 99,441 |
-
-# | Orders | 99,441 |
-
-# | Order Items | 112,650 |
-
-# | Sellers | 3,095 |
-
-# 
-
-# The original datasets are stored in `data/raw/`. Cleaned versions are stored in `data/interim/`.
-
-# 
-
-# \## 6. Data Cleaning Process
-
-# 
-
-# The cleaning process is implemented in `src/data\_cleaning.py`.
-
-# 
-
-# The script:
-
-# 1\. Reads the original CSV files.
-
-# 2\. Checks and removes duplicate rows.
-
-# 3\. Converts available timestamp columns to datetime values.
-
-# 4\. Handles invalid timestamp values using Pandas' `errors="coerce"` option.
-
-# 5\. Saves the cleaned datasets to `data/interim/`.
-
-# 6\. Reports original row counts, duplicate rows removed, final row counts, and remaining missing values.
-
-# 
-
-# The original datasets are preserved in `data/raw/`.
-
-# 
-
-# \### Data Quality Summary
-
-# 
-
-# | Dataset | Records | Duplicate Rows Removed | Missing Values Remaining |
-
-# |---|---:|---:|---:|
-
-# | Customers | 99,441 | 0 | 0 |
-
-# | Order Items | 112,650 | 0 | 0 |
-
-# | Orders | 99,441 | 0 | 4,908 |
-
-# | Sellers | 3,095 | 0 | 0 |
-
-# 
-
-# Missing values in the orders dataset are retained rather than filled with invented values.
-
-# 
-
-# \## 7. Timestamp Validation
-
-# 
-
-# Timestamp validation is performed using `src/validate\_timestamps.py`.
-
-# 
-
-# | Timestamp Column | Missing Before Conversion | Missing After Conversion | Invalid Timestamps |
-
-# |---|---:|---:|---:|
-
-# | Order Purchase Timestamp | 0 | 0 | 0 |
-
-# | Order Approved At | 160 | 160 | 0 |
-
-# | Order Delivered Carrier Date | 1,783 | 1,783 | 0 |
-
-# | Order Delivered Customer Date | 2,965 | 2,965 | 0 |
-
-# | Order Estimated Delivery Date | 0 | 0 | 0 |
-
-# 
-
-# No additional invalid timestamps were identified during validation. Missing-value counts remained unchanged.
-
-# 
-
-# \## 8. Investigation of Missing Delivery Timestamps
-
-# 
-
-# The script `src/investigate\_missing\_deliveries.py` identifies orders marked as delivered that have no customer delivery timestamp.
-
-# 
-
-# Key findings:
-
-# 
-
-# \- Eight delivered orders have missing customer delivery timestamps.
-
-# \- Seven of these orders have carrier delivery timestamps.
-
-# \- One order is missing both carrier and customer delivery timestamps.
-
-# \- All eight affected orders have corresponding order-item records.
-
-# \- Actual customer delivery dates cannot be confirmed from the missing timestamps.
-
-# 
-
-# The affected records are exported to `reports/delivered\_orders\_missing\_timestamps.csv`.
-
-# 
-
-# These records are flagged for investigation rather than assigned estimated or fabricated delivery dates.
-
-# 
-
-# \## 9. SQL Validation
-
-# 
-
-# SQL queries are maintained in `sql/data\_validation.sql`.
-
-# 
-
-# The validation covers:
-
-# 1\. Total records in each table.
-
-# 2\. Orders matched to customers.
-
-# 3\. Orders without matching customers.
-
-# 4\. Order items matched to orders.
-
-# 5\. Order items without matching orders.
-
-# 6\. Order items matched to sellers.
-
-# 7\. Order items without matching sellers.
-
-# 8\. Duplicate order IDs.
-
-# 9\. Duplicate customer IDs.
-
-# 10\. Duplicate seller IDs.
-
-# 11\. Missing customer delivery timestamps grouped by order status.
-
-# 12\. Delivered orders missing customer delivery timestamps.
-
-# 13\. Orders delivered after their estimated delivery dates.
-
-# 
-
-# \### SQL Validation Results
-
-# 
-
-# All 13 SQL queries executed successfully against the SQLite database.
-
-# 
-
-# | Validation | Result |
-
-# |---|---:|
-
-# | Customers | 99,441 |
-
-# | Orders | 99,441 |
-
-# | Order Items | 112,650 |
-
-# | Sellers | 3,095 |
-
-# | Orders without matching customers | 0 |
-
-# | Order items without matching orders | 0 |
-
-# | Order items without matching sellers | 0 |
-
-# | Duplicate order IDs | 0 |
-
-# | Duplicate customer IDs | 0 |
-
-# | Duplicate seller IDs | 0 |
-
-# | Delivered orders missing customer delivery timestamps | 8 |
-
-# | Orders delivered after estimated delivery date | 7,827 |
-
-# 
-
-# Detailed query outputs are saved in `reports/sql\_validation\_results.txt`.
-
-# 
-
-# \## 10. Missing Delivery Timestamps by Order Status
-
-# 
-
-# | Order Status | Missing Customer Delivery Timestamps |
-
-# |---|---:|
-
-# | Shipped | 1,107 |
-
-# | Canceled | 619 |
-
-# | Unavailable | 609 |
-
-# | Invoiced | 314 |
-
-# | Processing | 301 |
-
-# | Delivered | 8 |
-
-# | Created | 5 |
-
-# | Approved | 2 |
-
-# | \*\*Total\*\* | \*\*2,965\*\* |
-
-# 
-
-# Missing delivery timestamps are documented as data-quality findings. They are not automatically interpreted as proof of a delivery failure.
-
-# 
-
-# \## 11. Setup and Execution
-
-# 
-
-# Run these commands from the project root directory.
-
-# 
-
-# \### Prerequisites
-
-# 
-
-# \- Python installed
-
-# \- Pandas installed
-
-# 
-
-# Install Pandas if required:
-
-# 
-
-# ```bash
-
-# python -m pip install pandas
-
-# ```
-
-# 
-
-# \### Step 1: Inspect the Data
-
-# 
-
-# ```bash
-
-# python src/data\_inspection.py
-
-# ```
-
-# 
-
-# \### Step 2: Clean the Datasets
-
-# 
-
-# ```bash
-
-# python src/data\_cleaning.py
-
-# ```
-
-# 
-
-# \### Step 3: Load the Cleaned Data into SQLite
-
-# 
-
-# ```bash
-
-# python src/load\_sqlite.py
-
-# ```
-
-# 
-
-# \### Step 4: Validate Timestamps
-
-# 
-
-# ```bash
-
-# python src/validate\_timestamps.py
-
-# ```
-
-# 
-
-# \### Step 5: Investigate Missing Delivery Timestamps
-
-# 
-
-# ```bash
-
-# python src/investigate\_missing\_deliveries.py
-
-# ```
-
-# 
-
-# \### Step 6: Verify the Database Connection
-
-# 
-
-# ```bash
-
-# python src/check\_database.py
-
-# ```
-
-# 
-
-# \### Step 7: Run SQL Validation
-
-# 
-
-# ```bash
-
-# python src/run\_sql\_validation.py
-
-# ```
-
-# 
-
-# The SQL validation output is saved to `reports/sql\_validation\_results.txt`.
-
-# 
-
-# \## 12. Reports and Outputs
-
-# 
-
-# \- `reports/data\_quality\_report.md` — Summary of data quality and cleaning findings.
-
-# \- `reports/sql\_validation\_results.txt` — Results from all 13 SQL validation queries.
-
-# \- `reports/delivered\_orders\_missing\_timestamps.csv` — Orders requiring investigation because customer delivery timestamps are missing.
-
-# \- `data/interim/` — Cleaned CSV datasets.
-
-# \- `data/ecommerce\_analysis.db` — SQLite database containing the four datasets.
-
-# 
-
-# Generated datasets and the SQLite database are excluded from Git using `.gitignore`.
-
-# 
-
-# \## 13. Current Status
-
-# 
-
-# \- Data cleaning script executed successfully.
-
-# \- Four datasets loaded into SQLite.
-
-# \- Timestamp validation completed.
-
-# \- Eight delivered orders with missing customer delivery timestamps identified and documented.
-
-# \- All 13 SQL validation queries executed successfully.
-
-# \- README documentation updated.
-
-# 
-
-# \## 14. Team Contribution
-
-# 
-
-# \*\*Responsibility:\*\* Data Cleaning and SQL
-
-# 
-
-# Tasks include data inspection, duplicate checks, timestamp conversion and validation, missing-value investigation, SQLite loading, SQL relationship validation, and preparation of data-quality reports.
-
+**Repository:** `ecommerce-delivery-logistics-analysis`
